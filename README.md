@@ -7,9 +7,6 @@
 ### About *_generator* directory:
 - Python files for the generator goes here.
 
-### About *_includes* directory:
-- Reusable html code goes here.
-
 ### About *_layouts* directory:
 - Pages templates goes here.
 
@@ -24,4 +21,11 @@
 
 
 ### Develop notes:
-- Render flow: look for content files > extract all content tags > put content in layout > make all operations upon {{}} tags until no one is left > generate html files.
+Render flow: 
+    - Look for layouts directory
+    - Store layouts in dict
+    - Pre processes layout (loop)(make includes, ignore other tags)(self include is not allowed)
+    - Look for content files
+    - Extract all content tags to dict
+    - process layout (insert content/include)(loop until no tags are left)
+    - generate html files.
