@@ -72,15 +72,33 @@ class SiteGenerator:
             layout_file = layout_file.replace(f"{self.__configs['layouts_directory']}/", "")
             self.__layouts_dict[layout_file] = layout
 
+        for layout_name in self.__layouts_dict:
+            included_layout_names = []
+            while True:
+                include_layout_names = re.findall(r'{{include (.+?)}}', self.__layouts_dict[layout_name])
 
+                for included_layout_name in include_layout_names:
+                    if included_layout_name in included_layout_names:
+                        include_layout_names.remove(included_layout_name)
 
-        # Pre processes layout (loop)(make includes, ignore other tags)(self include is not allowed)
+                if not include_layout_names:
+                    break
 
+                for include_layout_name in include_layout_names:
+                    if (include_layout_name in self.__layouts_dict) and (include_layout_name != layout_name):
+                        include_content = self.__layouts_dict[include_layout_name]
+                        included_layout_names.append(include_layout_name)
+                    else:
+                        include_content = ""
 
+                    replace_tag = f"{{{{include {include_layout_name}}}}}"
+                    self.__layouts_dict[layout_name] = self.__layouts_dict[layout_name].replace(replace_tag, include_content)
+
+            any_include_tag_left = r'{{include (.+?)}}'
+            self.__layouts_dict[layout_name] = re.sub(any_include_tag_left, '', self.__layouts_dict[layout_name])
 
 
     def __process_site(self):
-        content_dict = {}
         content_file_names = self.__discover_html_file_names(self.__configs["content_directory"])
 
         for content_file in content_file_names:
